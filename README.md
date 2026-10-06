@@ -101,7 +101,7 @@ A forced-family row is the way to watch one path explicitly — e.g. two rows, "
 
 ## Alerts and the tray
 
-- Tiles slide in at the right edge of the chosen screen (or the left edge; see Settings) in a small always-on-top overlay that exists only while tiles are showing and is sized to them — nothing sits over your desktop or games the rest of the time. They appear even when the app is minimised, never steal focus, and dismiss on click, after the alert timeout (default 10 s), or automatically when a downed target recovers. Alerts fire only on state transitions, not on every failed check.
+- Tiles slide in at the right edge of the chosen screen (or the left edge; see Settings) in a small always-on-top overlay that exists only while tiles are showing and is sized to them — nothing sits over your desktop or games the rest of the time. They appear even when the app is minimised, never steal focus, and dismiss on click (or a tap, or a swipe toward the screen edge on a touch screen), after the alert timeout (default 10 s), or automatically when a downed target recovers. Alerts fire only on state transitions, not on every failed check.
 - A subtle two-note ping plays with each tile (per-target setting; falling for down, rising for recovery).
 - Tray icon: cyan ring when all active targets are up, red ring while any is offline; the tooltip shows the version and offline count. Right-click for Open, History, Mute alert sounds, Suppress tiles (off / until re-enabled / 1 m / 5 m / 15 m / 30 m / 1 h / 12 h — monitoring continues, only tiles are held), Exit.
 - Minimising hides to the tray; with "X minimises to tray" on, closing does too.

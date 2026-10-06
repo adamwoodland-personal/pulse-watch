@@ -198,7 +198,10 @@ public partial class AlertOverlayWindow : Window
         grid.Children.Add(content);
         tile.Child = grid;
 
-        tile.MouseLeftButtonUp += (_, _) => DismissTile(tile, host.Id);
+        tile.MouseLeftButtonUp += (_, e) =>
+        {
+            if (!PanelTouch.FromTouch(e)) DismissTile(tile, host.Id);
+        };
         AlertHost.Children.Insert(0, tile);
         if (!IsVisible) Show(); // ShowActivated=false + WS_EX_NOACTIVATE: never steals focus
 
@@ -225,6 +228,19 @@ public partial class AlertOverlayWindow : Window
         };
         timer.Start();
         tile.Unloaded += (_, _) => timer.Stop();
+
+        // Touch: tap dismisses, a swipe toward the edge throws it off. A finger on it holds it
+        // (so the timer can't yank it mid-swipe); lifting gives it a few more seconds.
+        PanelTouch.Attach(tile, () => _onLeft,
+            tap: () => DismissTile(tile, host.Id),
+            hold: null,
+            swipedOff: () => DismissTile(tile, host.Id),
+            started: timer.Stop,
+            ended: () =>
+            {
+                timer.Interval = TimeSpan.FromSeconds(Math.Min(durationSeconds, 5));
+                timer.Start();
+            });
     }
 
     /// <summary>Remove any offline tiles for a host (recovery, or host removed).</summary>
@@ -245,11 +261,12 @@ public partial class AlertOverlayWindow : Window
             if (list.Count == 0) _offlineTiles.Remove(id);
         }
 
-        var slideOut = new DoubleAnimation(0, OffscreenX, TimeSpan.FromMilliseconds(300))
+        // From wherever it is now: a swiped tile carries on from under the finger.
+        var slideOut = new DoubleAnimation(OffscreenX, TimeSpan.FromMilliseconds(300))
         {
             EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
         };
-        var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(260));
+        var fadeOut = new DoubleAnimation(0, TimeSpan.FromMilliseconds(260));
         fadeOut.Completed += (_, _) =>
         {
             AlertHost.Children.Remove(tile);
