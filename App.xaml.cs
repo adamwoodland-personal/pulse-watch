@@ -15,6 +15,12 @@ public partial class App : System.Windows.Application
 
     private Mutex? _instanceMutex;
 
+    protected override void OnExit(ExitEventArgs e)
+    {
+        Services.SessionLock.Stop();
+        base.OnExit(e);
+    }
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -31,6 +37,7 @@ public partial class App : System.Windows.Application
         }
 
         ParseArgs(e.Args);
+        Services.SessionLock.Start();
 
         var window = new MainWindow();
         MainWindow = window; // keeps ShutdownMode=OnMainWindowClose working even when hidden

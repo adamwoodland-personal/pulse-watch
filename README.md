@@ -36,7 +36,7 @@ Only one instance runs per user; a second launch shows a notice and exits.
 
 ## Targets
 
-Each target has: name, address, check method (TCP / PING / HTTP / HTTPS / DNS), IP version, interval, retries, timeout, active flag, optional alert sound, optional tile colours. HTTP(S) targets add a path and the ignore-certificate-errors option; DNS targets add the DNS server to ask and the record type. Double-click a row (or EDIT) to change a target; REMOVE is in the dialog too, and needs a second click within 3 s to confirm.
+Each target has: name, address, check method (TCP / PING / HTTP / HTTPS / DNS), IP version, interval, retries, timeout, active flag, optional alert sound (silent while Windows is locked), optional tile colours. HTTP(S) targets add a path and the ignore-certificate-errors option; DNS targets add the DNS server to ask and the record type. Double-click a row (or EDIT) to change a target; REMOVE is in the dialog too, and needs a second click within 3 s to confirm.
 
 **Address** (for DNS targets: the domain name to look up) can be a hostname, an IPv4/IPv6 literal (saved in standard form: brackets dropped, a link-local `%scope` kept), a pasted URL (the host is extracted; for HTTP/HTTPS targets the scheme, port and path are taken from it too), or a token:
 
