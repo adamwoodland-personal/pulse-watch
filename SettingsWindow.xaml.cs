@@ -66,7 +66,7 @@ public partial class SettingsWindow : Window
     {
         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
         {
-            FileName = "https://github.com/adamwoodland2/pulse-watch",
+            FileName = "https://github.com/adamwoodland-personal/pulse-watch",
             UseShellExecute = true
         });
     }

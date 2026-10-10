@@ -96,7 +96,7 @@
             <TextBlock x:Name="VersionText" Foreground="{StaticResource TextBrush}" FontSize="12"/>
             <TextBlock FontSize="12" Margin="0,4,0,0">
                 <Hyperlink Foreground="{StaticResource AccentBrush}" Click="GitHub_Click">
-                    <Run Text="github.com/adamwoodland2/pulse-watch"/>
+                    <Run Text="github.com/adamwoodland-personal/pulse-watch"/>
                 </Hyperlink>
             </TextBlock>
             <TextBlock Foreground="{StaticResource TextDimBrush}" FontSize="11" Margin="0,6,0,0"
