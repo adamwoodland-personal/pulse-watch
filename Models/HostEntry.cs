@@ -53,8 +53,16 @@ public class HostEntry : INotifyPropertyChanged
     private HostStatus _status = HostStatus.Unknown;
     private long _latencyMs = -1;
     private DateTime? _lastChecked;
+    private Guid? _groupId;
 
     public Guid Id { get; set; } = Guid.NewGuid();
+
+    /// <summary>The tab this target is listed under (a <see cref="HostGroup"/> Id); null = Default.</summary>
+    public Guid? GroupId
+    {
+        get => _groupId;
+        set { _groupId = value; OnPropertyChanged(); }
+    }
 
     public string Name
     {

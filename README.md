@@ -55,6 +55,16 @@ Each target has: name, address, check method (TCP / PING / HTTP / HTTPS / DNS), 
 
 A forced-family row is the way to watch one path explicitly — e.g. two rows, "Gmail v4" and "Gmail v6", make an IPv6 blackhole visible instead of hidden behind fallback. The list shows the family on forced rows (`TCP:443 v6`, `ICMP v4`).
 
+## Groups
+
+Tabs above the list sort targets into groups, to keep a long list manageable. Grouping is cosmetic only: it never changes how or whether a target is checked, and alerts, the tray icon and History still cover every group.
+
+- **Default** is always the first tab and holds every target that isn't in another group. **+** after the last tab adds a group and starts renaming it.
+- Double-click a tab (or press F2) to rename it; right-click it for Rename, Move left / Move right and Delete group. Deleting a group moves its targets to Default.
+- Each target is in exactly one group. Pick it in the add/edit dialog (the GROUP field, shown once there's more than Default; a new target starts in the tab that's showing), or drag a row onto a tab.
+- Each tab shows how many targets it holds, and a red dot while any of them is offline, so an outage on a tab that isn't showing still stands out.
+- When the tabs don't all fit, ‹ › arrows at the left step through them (so does the mouse wheel over the tabs). Ctrl+PgUp / Ctrl+PgDn switch tabs. The app reopens on the last tab used.
+
 ## How checks work
 
 **Scheduling.** Each active target runs its own loop on its interval. Loops start with a random 0.2–8 s offset so many targets don't fire in a synchronized burst every interval. A target is declared offline only after the check fails *and* the configured retries (default 1, spaced 1 s apart) also fail; one success flips it back online immediately. The per-target timeout (default 4000 ms) bounds the whole check, DNS included.
@@ -120,9 +130,9 @@ A forced-family row is the way to watch one path explicitly — e.g. two rows, "
 
 ## Settings
 
-⚙ SETTINGS: X-minimises-to-tray, confirm-before-exit, auto-start at login (minimised), alert timeout, which side of the screen alert tiles appear on (right by default, or left), global tile colours (with picker), version/GitHub/licence. Everything — settings and targets — lives in one JSON file, `%APPDATA%\PulseWatch\settings.json` by default (Config Folder link on the main screen) or whatever `--settings` points at, for easy backup or moving between machines. Auto-start is the one setting kept in the registry instead, since it embeds the exe path.
+⚙ SETTINGS: X-minimises-to-tray, confirm-before-exit, auto-start at login (minimised), alert timeout, which side of the screen alert tiles appear on (right by default, or left), global tile colours (with picker), version/GitHub/licence. Everything — settings, groups and targets — lives in one JSON file, `%APPDATA%\PulseWatch\settings.json` by default (Config Folder link on the main screen) or whatever `--settings` points at, for easy backup or moving between machines. Auto-start is the one setting kept in the registry instead, since it embeds the exe path.
 
-Loading is defensive: out-of-range numbers are clamped, invalid colours reset, duplicate target IDs regenerated, and an unreadable file is preserved as `settings.json.corrupt` with a warning. Saves are atomic.
+Loading is defensive: out-of-range numbers are clamped, invalid colours reset, duplicate target and group IDs regenerated, targets of a missing group returned to Default, and an unreadable file is preserved as `settings.json.corrupt` with a warning. Saves are atomic.
 
 ## Licence
 

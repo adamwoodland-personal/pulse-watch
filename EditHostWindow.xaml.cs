@@ -21,14 +21,17 @@ public partial class EditHostWindow : Window
 
     private readonly string _globalOffline;
     private readonly string _globalOnline;
+    private readonly List<Guid?> _groupIds = new(); // parallel to GroupCombo's items; null = Default
     private readonly DispatcherTimer _removeArmTimer = new() { Interval = TimeSpan.FromSeconds(3) };
 
-    public EditHostWindow(Services.AppSettings settings)
+    /// <param name="group">The group a new target starts in (the tab that's showing); null = Default.</param>
+    public EditHostWindow(Services.AppSettings settings, Guid? group = null)
     {
         InitializeComponent();
         Icon = AppIcon.WindowIcon;
         _globalOffline = settings.OfflineTileColor;
         _globalOnline = settings.OnlineTileColor;
+        FillGroups(settings.Groups, group);
         _removeArmTimer.Tick += (_, _) => DisarmRemove();
         SourceInitialized += (_, _) => MaxHeight = WorkArea().Height;
         Loaded += (_, _) => KeepOnScreen();
@@ -37,7 +40,7 @@ public partial class EditHostWindow : Window
         ApplyMethod(CheckType.Tcp);
     }
 
-    public EditHostWindow(Services.AppSettings settings, HostEntry existing) : this(settings)
+    public EditHostWindow(Services.AppSettings settings, HostEntry existing) : this(settings, existing.GroupId)
     {
         HeaderText.Text = "EDIT TARGET";
         Title = "Edit target";
@@ -87,6 +90,21 @@ public partial class EditHostWindow : Window
     // Hairline above the footer while the form is cut off, so it reads as scrollable.
     private void FormScroller_ScrollChanged(object sender, ScrollChangedEventArgs e)
         => FooterBar.BorderThickness = new Thickness(0, FormScroller.ScrollableHeight > 0 ? 1 : 0, 0, 0);
+
+    // ===== Group =====
+
+    private void FillGroups(IEnumerable<HostGroup> groups, Guid? selected)
+    {
+        GroupCombo.Items.Add(new ComboBoxItem { Content = HostGroup.DefaultName });
+        _groupIds.Add(null);
+        foreach (var group in groups)
+        {
+            GroupCombo.Items.Add(new ComboBoxItem { Content = group.Name });
+            _groupIds.Add(group.Id);
+        }
+        GroupCombo.SelectedIndex = Math.Max(0, _groupIds.IndexOf(selected));
+        GroupPanel.Visibility = _groupIds.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     // ===== Tile colours =====
 
@@ -307,7 +325,8 @@ public partial class EditHostWindow : Window
             Enabled = ActiveCheck.IsChecked == true,
             PlaySound = SoundCheck.IsChecked == true,
             OfflineColor = offlineColor.Length > 0 ? offlineColor : null,
-            OnlineColor = onlineColor.Length > 0 ? onlineColor : null
+            OnlineColor = onlineColor.Length > 0 ? onlineColor : null,
+            GroupId = _groupIds[Math.Max(0, GroupCombo.SelectedIndex)]
         };
         DialogResult = true;
     }

@@ -24,6 +24,13 @@ public class AppSettings
     public bool MuteSounds { get; set; }
     public string OfflineTileColor { get; set; } = DefaultOfflineColor;
     public string OnlineTileColor { get; set; } = DefaultOnlineColor;
+
+    /// <summary>User groups (tabs) in display order, after the built-in Default tab.</summary>
+    public List<HostGroup> Groups { get; set; } = new();
+
+    /// <summary>The tab that was showing; null = Default.</summary>
+    public Guid? SelectedGroup { get; set; }
+
     public List<HostEntry> Hosts { get; set; } = new();
 }
 
@@ -107,6 +114,22 @@ public static class SettingsService
         if (ValidationHelpers.ParseColor(s.OfflineTileColor ?? "") == null) s.OfflineTileColor = AppSettings.DefaultOfflineColor;
         if (ValidationHelpers.ParseColor(s.OnlineTileColor ?? "") == null) s.OnlineTileColor = AppSettings.DefaultOnlineColor;
 
+        s.Groups ??= new List<HostGroup>();
+        s.Groups.RemoveAll(g => g == null);
+        var groupIds = new HashSet<Guid>();
+        var groupNames = new List<string> { HostGroup.DefaultName };
+        foreach (var g in s.Groups)
+        {
+            if (g.Id == Guid.Empty || !groupIds.Add(g.Id))
+            {
+                g.Id = Guid.NewGuid();
+                groupIds.Add(g.Id);
+            }
+            g.Name = HostGroup.Unique(HostGroup.CleanName(g.Name) ?? "Group", groupNames);
+            groupNames.Add(g.Name);
+        }
+        if (s.SelectedGroup is Guid selected && !groupIds.Contains(selected)) s.SelectedGroup = null;
+
         s.Hosts ??= new List<HostEntry>();
         s.Hosts.RemoveAll(h => h == null);
 
@@ -118,6 +141,7 @@ public static class SettingsService
                 h.Id = Guid.NewGuid(); // duplicate ids would cross-wire loops and tile dismissal
                 seenIds.Add(h.Id);
             }
+            if (h.GroupId is Guid groupId && !groupIds.Contains(groupId)) h.GroupId = null; // lost group: back to Default
             h.Name ??= "";
             h.Address ??= "";
             h.Port = Math.Clamp(h.Port, 1, 65535);
